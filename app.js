@@ -8,6 +8,7 @@
 // Import required dependencies
 const express = require('express');
 const path = require('path');
+const createError = require('http-errors');
 
 // Import logging middleware
 const { logMiddleware } = require('./middleware/logger');
