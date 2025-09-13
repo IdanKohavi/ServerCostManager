@@ -62,7 +62,7 @@ router.post('/', async (req, res) => {
                 category,
                 userid,
                 sum: sumDecimal,
-                date: date || Date.now()
+                date: date ? new Date(date) : Date.now()
             });
 
             await newCost.save();
@@ -76,7 +76,8 @@ router.post('/', async (req, res) => {
                 date: newCost.date
             }
 
-            res.status(201).json(newCost);
+            res.status(201).json(response);
+
         } else {
             return res.status(400).json({
                 error: "Invalid request, Provide user data(id, first_name, last_name, birthday) or cost data(description, category, userid, sum)"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE_URL="http://localhost:3000/api"
+BASE_URL="https://cost-manager-uxld.onrender.com/api"
 
 echo "🚀 Starting Cost Manager Demo..."
 echo ""
@@ -34,7 +34,7 @@ curl -s "$BASE_URL/about" | jq
 echo -e "\n"
 
 echo "7️⃣ Getting logs..."
-curl -s "$BASE_URL/logs" | jq
+curl -s "$BASE_URL/logs" | jq -c '.[] | {timestamp, message}'
 echo -e "\n"
 
 echo "✅ Demo finished!"

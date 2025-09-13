@@ -24,7 +24,6 @@ describe('Cost Manager API', () => {
 
     describe('POST /api/add (User)', () => {
         it('should add a new user', async () => {
-            // Use a unique ID based on timestamp to avoid conflicts
             const uniqueId = Date.now();
             const userData = {
                 id: uniqueId,
@@ -43,6 +42,37 @@ describe('Cost Manager API', () => {
             expect(res.body.last_name).toBe('User');
             expect(res.body.id).toBe(uniqueId);
         });
+
+        it('should return error for duplicate user ID', async () => {
+            const userData = {
+                id: 123123, // Default user ID
+                first_name: 'Duplicate',
+                last_name: 'User',
+                birthday: '1990-01-01'
+            };
+
+            const res = await request(app)
+                .post('/api/add')
+                .send(userData)
+                .expect(400);
+
+            expect(res.body).toHaveProperty('error');
+        });
+
+        it('should return error for missing required fields', async () => {
+            const userData = {
+                id: 999999,
+                first_name: 'Incomplete'
+                // Missing last_name and birthday
+            };
+
+            const res = await request(app)
+                .post('/api/add')
+                .send(userData)
+                .expect(400);
+
+            expect(res.body).toHaveProperty('error');
+        });
     });
 
     describe('POST /api/add (Cost)', () => {
@@ -50,7 +80,7 @@ describe('Cost Manager API', () => {
             const costData = {
                 description: 'Test item',
                 category: 'food',
-                userid: 123123,  // Use the default user ID
+                userid: 123123, // Use default user ID
                 sum: 10.50
             };
 
@@ -62,6 +92,37 @@ describe('Cost Manager API', () => {
             expect(res.body.description).toBe('Test item');
             expect(res.body.category).toBe('food');
             expect(res.body.userid).toBe(123123);
+            expect(res.body.sum).toBe(10.50);
+        });
+
+        it('should return error for non-existent user', async () => {
+            const costData = {
+                description: 'Test item',
+                category: 'food',
+                userid: 999999, // Non-existent user
+                sum: 10.50
+            };
+
+            const res = await request(app)
+                .post('/api/add')
+                .send(costData)
+                .expect(400);
+
+            expect(res.body).toHaveProperty('error');
+        });
+
+        it('should return error for invalid category', async () => {
+            const costData = {
+                description: 'Test item',
+                category: 'invalid_category',
+                userid: 123123,
+                sum: 10.50
+            };
+
+            const res = await request(app)
+                .post('/api/add')
+                .send(costData)
+                .expect(500); // Mongoose validation error
         });
     });
 
@@ -88,6 +149,14 @@ describe('Cost Manager API', () => {
             expect(res.body).toHaveProperty('total');
             expect(res.body.id).toBe(123123);
         });
+
+        it('should return 404 for non-existent user', async () => {
+            const res = await request(app)
+                .get('/api/users/999999')
+                .expect(404);
+
+            expect(res.body).toHaveProperty('error');
+        });
     });
 
     describe('GET /api/report', () => {
@@ -102,6 +171,14 @@ describe('Cost Manager API', () => {
             expect(res.body).toHaveProperty('costs');
             expect(Array.isArray(res.body.costs)).toBe(true);
             expect(res.body.userid).toBe(123123);
+        });
+
+        it('should return error for missing parameters', async () => {
+            const res = await request(app)
+                .get('/api/report')
+                .expect(400);
+
+            expect(res.body).toHaveProperty('error');
         });
     });
 

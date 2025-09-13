@@ -6,11 +6,8 @@
  */
 
 // Import required dependencies
-const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
 
 // Import logging middleware
 const { logMiddleware } = require('./middleware/logger');
@@ -38,21 +35,12 @@ mongoose.connect(process.env.MONGO).then(() => {
   console.error(' MongoDB connection error:', err.message);
 });
 
-// Configure view engine and static files
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-
 // Set up middleware
-app.use(logger('dev'));  // HTTP request logger
 app.use(express.json());  // Parse JSON request bodies
 app.use(express.urlencoded({ extended: false }));  // Parse URL-encoded request bodies
-app.use(cookieParser());  // Parse cookies
-app.use(express.static(path.join(__dirname, 'public')));  // Serve static files
 
 //MongoDB Logs
 app.use(logMiddleware);
-
-
 
 // API Routes
 app.use('/api/add', addRouter);  // Handle cost addition
@@ -79,13 +67,12 @@ app.use(function(req, res, next) {
  * @param {express.NextFunction} next - Express next middleware function
  */
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
+  // Return JSON error instead of rendering HTML
   res.status(err.status || 500);
-  res.render('error');
+  res.json({
+    error: err.message,
+    status: err.status || 500
+  });
 });
 
 
