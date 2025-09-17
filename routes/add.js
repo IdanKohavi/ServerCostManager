@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
 
         //Users
         if (body.first_name && body.last_name && body.id && body.birthday) {
-            const {id, first_name, last_name, birthday, marital_status} = body;
+            const {id, first_name, last_name, birthday} = body;
             const existingUser = await User.findOne({id: id});
             if (existingUser) {
                 return res.status(400).json({error: "User with this ID already exists"});
@@ -38,8 +38,7 @@ router.post('/', async (req, res) => {
                 id,
                 first_name,
                 last_name,
-                birthday: new Date(birthday),
-                marital_status: marital_status || "single"
+                birthday: new Date(birthday)
             });
 
             await newUser.save();

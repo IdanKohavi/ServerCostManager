@@ -99,8 +99,10 @@ router.get('/', async (req, res) => {
             try {
                 const savedReport = new Report(report);
                 await savedReport.save();
+                console.log(`Report cached successfully for user ${userId}, ${reportYear}-${reportMonth}`);
             } catch (saveError) {
                 console.log("Report caching failed: ", saveError.message);
+                console.log("Report data: ", report); // Add this to see what data is being saved
             }
         }
 

@@ -11,7 +11,6 @@ const mongoose = require('mongoose');
  * @property {string} first_name - User's first name
  * @property {string} last_name - User's last name
  * @property {Date} birthday - User's date of birth
- * @property {('single'|'married'|'divorced'|'widowed')} marital_status - User's marital status
  */
 
 /**
@@ -35,11 +34,6 @@ const userSchema = new mongoose.Schema({
     birthday: {
         type: Date,
         required: true
-    },
-    marital_status: {
-        type: String,
-        enum: ['single', 'married', 'divorced', 'widowed'],
-        required: false
     }
 });
 

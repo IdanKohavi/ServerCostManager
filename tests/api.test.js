@@ -35,7 +35,6 @@ describe('Cost Manager API - Complete Test Suite', () => {
                 first_name: 'mosh',
                 last_name: 'israeli',
                 birthday: new Date('1990-01-01'),
-                marital_status: 'single'
             });
         }
     });
@@ -77,7 +76,6 @@ describe('Cost Manager API - Complete Test Suite', () => {
                 first_name: 'Test',
                 last_name: 'User',
                 birthday: '1990-01-01',
-                marital_status: 'single'
             };
 
             const res = await request(app)
@@ -88,7 +86,6 @@ describe('Cost Manager API - Complete Test Suite', () => {
             expect(res.body.first_name).toBe('Test');
             expect(res.body.last_name).toBe('User');
             expect(res.body.id).toBe(uniqueId);
-            expect(res.body.marital_status).toBe('single');
         });
 
         it('should return error for duplicate user ID', async () => {
@@ -121,24 +118,6 @@ describe('Cost Manager API - Complete Test Suite', () => {
                 .expect(400);
 
             expect(res.body).toHaveProperty('error');
-        });
-
-        it('should set default marital_status to single', async () => {
-            const uniqueId = Date.now() + 1;
-            const userData = {
-                id: uniqueId,
-                first_name: 'Test',
-                last_name: 'User',
-                birthday: '1990-01-01'
-                // No marital_status provided
-            };
-
-            const res = await request(app)
-                .post('/api/add')
-                .send(userData)
-                .expect(201);
-
-            expect(res.body.marital_status).toBe('single');
         });
     });
 
@@ -281,10 +260,10 @@ describe('Cost Manager API - Complete Test Suite', () => {
     });
 
     describe('GET /api/report', () => {
-        beforeEach(async () => {
-            // Clear any existing reports for test user
-            await Report.deleteMany({ userid: 100001 });
-        });
+        // beforeEach(async () => {
+        //     // Clear any existing reports for test user
+        //     await Report.deleteMany({ userid: 100001 });
+        // });
 
         it('should return monthly report with correct structure', async () => {
             // Create a test user
@@ -293,7 +272,6 @@ describe('Cost Manager API - Complete Test Suite', () => {
                 first_name: 'Test',
                 last_name: 'User',
                 birthday: new Date('1990-01-01'),
-                marital_status: 'single'
             });
 
             // Add some test costs
@@ -378,7 +356,6 @@ describe('Cost Manager API - Complete Test Suite', () => {
                 first_name: 'Test',
                 last_name: 'User',
                 birthday: new Date('1990-01-01'),
-                marital_status: 'single'
             });
 
             // Add a cost for a past month
@@ -484,27 +461,6 @@ describe('Cost Manager API - Complete Test Suite', () => {
                     .expect(201);
 
                 expect(res.body.category).toBe(category);
-            }
-        });
-
-        it('should validate user marital status', async () => {
-            const validStatuses = ['single', 'married', 'divorced', 'widowed'];
-
-            for (const status of validStatuses) {
-                const userData = {
-                    id: Date.now() + Math.random(),
-                    first_name: 'Test',
-                    last_name: 'User',
-                    birthday: '1990-01-01',
-                    marital_status: status
-                };
-
-                const res = await request(app)
-                    .post('/api/add')
-                    .send(userData)
-                    .expect(201);
-
-                expect(res.body.marital_status).toBe(status);
             }
         });
     });
